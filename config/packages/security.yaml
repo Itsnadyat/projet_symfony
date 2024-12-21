@@ -1,0 +1,33 @@
+security:
+
+    providers:
+        app_user_provider:
+            entity:
+                class: App\Entity\User
+                property: login  # Utilisation du login pour identifier l'utilisateur
+
+    firewalls:
+        main:
+            # Utilisation de form_login comme authentificateur
+            form_login:
+                login_path: app_login        # Chemin vers la page de connexion
+                check_path: app_login        # Chemin vers la soumission du formulaire
+                enable_csrf: true            # Sécurisation du formulaire avec CSRF
+            custom_authenticators: [App\Security\AppAuthenticator] 
+            entry_point: App\Security\AppAuthenticator # Utilisation de votre authentificateur personnalisé
+            logout:
+                path: app_logout             # Chemin pour la déconnexion
+                target: app_login            # Redirection vers la page de connexion après la déconnexion
+            remember_me:
+                secret:   '%kernel.secret%'  # Secret pour "se souvenir de l'utilisateur"
+                lifetime: 604800             # Durée de la session "remember me" (7 jours)
+                path:     /                  # Le chemin où le "remember me" sera valide
+
+    access_control:
+        - { path: ^/admin, roles: ROLE_BOUTIQUIER }
+        - { path: ^/vendeur, roles: ROLE_VENDEUR }
+        - { path: ^/user, roles: ROLE_USER }
+
+    password_hashers:
+        App\Entity\User:
+            algorithm: auto  # Utilisation de l'algorithme auto pour hacher les mots de passe
